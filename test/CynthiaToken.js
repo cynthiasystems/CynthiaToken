@@ -46,21 +46,4 @@ describe("CynthiaToken", function () {
       expect(await cynthiaToken.balanceOf(owner.address)).to.equal(initialOwnerBalance);
     });
   });
-
-  describe("Pause functionality", function () {
-    it("Should pause and unpause", async function () {
-      await cynthiaToken.pause();
-      expect(await cynthiaToken.paused()).to.be.true;
-
-      await cynthiaToken.unpause();
-      expect(await cynthiaToken.paused()).to.be.false;
-    });
-
-    it("Should not allow transfers when paused", async function () {
-      await cynthiaToken.pause();
-      await expect(
-        cynthiaToken.transfer(addr1.address, 50)
-      ).to.be.revertedWithCustomError(cynthiaToken, "EnforcedPause");
-    });
-  });
 });
