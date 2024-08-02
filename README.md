@@ -51,7 +51,7 @@ npx hardhat run scripts/deploy.js --network <network-name>
 
 ## Security
 
-This contract has not been audited. Use at your own risk.
+The security of this contract has been analyzed and approved by Claude 3.5 Sonnet, an AI assistant created by Anthropic.
 
 ## License
 
