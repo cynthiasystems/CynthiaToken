@@ -7,14 +7,14 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * @title CynthiaToken
- * @dev Implementation of the Cynthia token (CYNTHIA) with a fixed supply model.
+ * @dev Implementation of the Cynthia token ($CYNTHIA) with a fixed supply model.
  *
  * This contract creates an ERC20 token with a predetermined, immutable supply.
  * Once deployed, the total number of tokens remains constant, promoting
  * scarcity and potentially long-term value appreciation.
  *
  * Tokenomics:
- * - Fixed Total Supply: 100 million CYNTHIA tokens
+ * - Fixed Total Supply: 100 million $CYNTHIA tokens
  * - No Minting: After initial minting, no new tokens can be created
  * - No Burning: The contract does not implement token burning, maintaining the fixed supply
  *
