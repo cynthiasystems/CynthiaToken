@@ -194,5 +194,60 @@ describe("CynthiaTokenSale", function () {
       expect(finalTokenBalance).to.equal(initialTokenBalance - purchaseAmount);
     });
   });
+
+  describe("Reentrancy Protection", function () {
+    let attackContract;
+  
+    beforeEach(async function () {
+      // Deploy the attack contract
+      const AttackContract = await ethers.getContractFactory("AttackContract");
+      attackContract = await AttackContract.deploy(await cynthiaTokenSale.getAddress());
+    });
+  
+    it("Should prevent reentrancy attacks", async function () {
+      const initialAttackerBalance = await cynthiaToken.balanceOf(await attackContract.getAddress());
+      const initialContractBalance = await cynthiaTokenSale.getContractTokenBalance();
+      const attackValue = ethers.parseEther("1");
+  
+      await attackContract.attack({ value: attackValue });
+  
+      const finalAttackerBalance = await cynthiaToken.balanceOf(await attackContract.getAddress());
+      const finalContractBalance = await cynthiaTokenSale.getContractTokenBalance();
+  
+      // The attacker should receive tokens for one transaction only
+      expect(finalAttackerBalance).to.equal(initialAttackerBalance + attackValue);
+  
+      // The contract balance should only decrease by the amount of one transaction
+      expect(finalContractBalance).to.equal(initialContractBalance - attackValue);
+    });
+  
+    it("Should emit TokensPurchased event only once per attack attempt", async function () {
+      const attackValue = ethers.parseEther("1");
+  
+      await expect(attackContract.attack({ value: attackValue }))
+        .to.emit(cynthiaTokenSale, "TokensPurchased")
+        .withArgs(await attackContract.getAddress(), attackValue);
+  
+      // Check that the event is emitted only once
+      const receipt = await ethers.provider.getTransactionReceipt((await attackContract.attack({ value: attackValue })).hash);
+      const events = await cynthiaTokenSale.queryFilter(cynthiaTokenSale.filters.TokensPurchased(), receipt.blockNumber, receipt.blockNumber);
+      expect(events.length).to.equal(1);
+    });
+  
+    it("Should not deplete more tokens than expected in an attack", async function () {
+      const initialSaleBalance = await cynthiaTokenSale.getContractTokenBalance();
+      const attackValue = ethers.parseEther("5"); // Trying to buy 5 tokens
+      const expectedPurchase = ethers.parseEther("1"); // But should only get 1 token per transaction
+    
+      await attackContract.attack({ value: attackValue });
+    
+      const finalSaleBalance = await cynthiaTokenSale.getContractTokenBalance();
+      expect(initialSaleBalance - finalSaleBalance).to.equal(expectedPurchase);
+    
+      // Verify the attacker's token balance
+      const attackerBalance = await cynthiaToken.balanceOf(await attackContract.getAddress());
+      expect(attackerBalance).to.equal(expectedPurchase);
+    });
+  });
 });
 
