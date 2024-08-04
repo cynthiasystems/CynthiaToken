@@ -67,7 +67,6 @@ contract CynthiaTokenSale is Ownable, ReentrancyGuard {
         emit TokensPurchased(msg.sender, tokenAmount);
     }
 
-
     /**
      * @notice Allows the owner to withdraw all accumulated ETH from the contract
      * @dev Only callable by the contract owner due to the onlyOwner modifier

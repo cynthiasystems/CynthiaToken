@@ -6,11 +6,13 @@ module.exports = {
   networks: {
     mainnet: {
       url: process.env.MAINNET_RPC_URL,
-      accounts: [process.env.MAINNET_PRIVATE_KEY]
+      accounts: [process.env.MAINNET_PRIVATE_KEY],
+      gasPrice: 'auto'
     },
     sepolia: {
       url: process.env.SEPOLIA_RPC_URL,
-      accounts: [process.env.PRIVATE_KEY]
+      accounts: [process.env.PRIVATE_KEY],
+      gasPrice: 'auto'
     }
   },
   etherscan: {
